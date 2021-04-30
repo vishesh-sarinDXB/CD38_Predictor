@@ -1,7 +1,10 @@
 from sklearn.model_selection import train_test_split
+from scipy.stats import uniform, randint
+from sklearn.model_selection import RandomizedSearchCV
 import numpy as np
 import pandas as pd
 import re
+import xgboost as xgb
 
 def display_scores(scores):
     print("Scores: {0}\nMean: {1:.3f}\nStd: {2:.3f}".format(scores, np.mean(scores), np.std(scores)))
@@ -17,6 +20,27 @@ def report_best_scores(results, n_top=3):
                   results['std_test_score'][candidate]))
             print("Parameters: {0}".format(results['params'][candidate]))
             print("")
+
+def get_params(results, rank = 1):
+    candidates = np.flatnonzero(results['rank_test_score'] == rank)
+    return results['params'][candidates[0]]
+
+def getModelAndBestParams(X, y):
+    params = {
+        "colsample_bytree": uniform(0.5, 0.5),
+        "colsample_bylevel": uniform(0.5, 0.5),
+        "colsample_bynode": uniform(0.5, 0.5),
+        "gamma": uniform(0, 1),
+        "learning_rate": uniform(0, 1), # default 0.1 
+        "max_depth": randint(2, 10), # default 3
+        "n_estimators": randint(100, 200), # default 100
+        "subsample": uniform(0.5, 0.5)
+    }
+    xgb_model = xgb.XGBRegressor(n_jobs = -1, random_state = 42)
+    search = RandomizedSearchCV(xgb_model, param_distributions=params, random_state=42, n_iter=50, refit= True, 
+                                scoring = "neg_mean_absolute_error", n_jobs=-1, return_train_score=True)
+    search.fit(X, y)
+    return search, get_params(search.cv_results_)
 
 def getProcessedData(goi_id, testSize = 0.2, randomState = 42):
     pat = pd.read_csv('~/COMMPASS/COMMPASS/IA13/Expression Estimates - Gene Based/MMRF_CoMMpass_IA13a_E74GTF_HtSeq_Gene_Counts.csv')
