@@ -1,10 +1,14 @@
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 from scipy.stats import uniform, randint
-from sklearn.model_selection import RandomizedSearchCV
+# from sklearn.model_selection import 
 import numpy as np
 import pandas as pd
 import re
 import xgboost as xgb
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def display_scores(scores):
     print("Scores: {0}\nMean: {1:.3f}\nStd: {2:.3f}".format(scores, np.mean(scores), np.std(scores)))
@@ -24,6 +28,100 @@ def report_best_scores(results, n_top=3):
 def get_params(results, rank = 1):
     candidates = np.flatnonzero(results['rank_test_score'] == rank)
     return results['params'][candidates[0]]
+
+def getMAEandPlots(xgb, X_train, X_test, y_train, y_test):
+    regr = RandomForestRegressor(random_state=0, n_jobs = -1, criterion = 'mae')
+    regr.fit(X_train, y_train)
+    y_pred_regr = regr.predict(X_test)
+    y_pred_regr = pd.Series(y_pred_regr, index = y_test.index)
+    y_pred_xgb = xgb.predict(X_test)
+    y_pred_xgb = pd.Series(y_pred_xgb, index = y_test.index)
+
+    mae = pd.DataFrame({'xgb': [mean_absolute_error(y_test, y_pred_xgb)], 
+                         'rf': [mean_absolute_error(y_test, y_pred_regr)]})
+
+    y_pred_regr = pd.DataFrame(y_pred_regr)
+    y_pred_regr.columns = ['CD38predicted']
+
+    y_pred_regr['CD38'] = y_test
+    y_pred_regr['Type'] = 'Testing Data RF'
+
+    y_pred_regr_train = regr.predict(X_train)
+
+    y_pred_regr_train = pd.Series(y_pred_regr_train, index = y_train.index)
+
+    y_pred_regr_train = pd.DataFrame(y_pred_regr_train)
+    y_pred_regr_train.columns = ['CD38predicted']
+
+    y_pred_regr_train['CD38'] = y_train
+    y_pred_regr_train['Type'] = 'Training Data RF'
+    y_pred_regr_comb = pd.concat([y_pred_regr, y_pred_regr_train])
+
+    y_pred_xgb = pd.DataFrame(y_pred_xgb)
+    y_pred_xgb.columns = ['CD38predicted']
+
+    y_pred_xgb['CD38'] = y_test
+    y_pred_xgb['Type'] = 'Testing Data XGB'
+
+    y_pred_xgb_train = xgb.predict(X_train)
+
+    y_pred_xgb_train = pd.Series(y_pred_xgb_train, index = y_train.index)
+
+    y_pred_xgb_train = pd.DataFrame(y_pred_xgb_train)
+    y_pred_xgb_train.columns = ['CD38predicted']
+
+    y_pred_xgb_train['CD38'] = y_train
+    y_pred_xgb_train['Type'] = 'Training Data XGB'
+    y_pred_xgb_comb = pd.concat([y_pred_xgb, y_pred_xgb_train])
+
+    y_pred_comb = pd.concat([y_pred_xgb_comb, y_pred_regr_comb])
+
+    sns.lmplot(x = 'CD38', y = 'CD38predicted', hue = 'Type', data = y_pred_regr_comb, height = 10, legend = False)
+
+    plt.xlabel('Actual', size = 16)
+
+    plt.ylabel('Predicted', size = 16)
+
+    plt.ylim(9.5, 17)
+    plt.xlim(9.5, 17)
+
+    plt.legend(loc = 'lower right', fontsize = 14)
+
+    plt.title('RF using All features', size = 20)
+
+    plt.show()
+
+    sns.lmplot(x = 'CD38', y = 'CD38predicted', hue = 'Type', data = y_pred_xgb_comb, height = 10, legend = False)
+
+    plt.xlabel('Actual', size = 16)
+
+    plt.ylabel('Predicted', size = 16)
+
+    plt.ylim(9.5, 17)
+    plt.xlim(9.5, 17)
+
+    plt.legend(loc = 'lower right', fontsize = 14)
+
+    plt.title('XGB tuned model using All features', size = 20)
+
+    plt.show()
+
+    sns.lmplot(x = 'CD38', y = 'CD38predicted', hue = 'Type', data = y_pred_comb, height = 10, legend = False)
+
+    plt.xlabel('Actual', size = 16)
+
+    plt.ylabel('Predicted', size = 16)
+
+    plt.ylim(9.5, 17)
+    plt.xlim(9.5, 17)
+
+    plt.legend(loc = 'lower right', fontsize = 14)
+
+    plt.title('RF and XGB using All features', size = 20)
+
+    plt.show()
+
+    return mae
 
 def getModelAndBestParams(X, y):
     params = {
@@ -73,6 +171,8 @@ def getProcessedData(goi_id, testSize = 0.2, randomState = 42):
     X_log_train, X_log_test, y_log_train, y_log_test = train_test_split(X_log, y_log, test_size=testSize, random_state=randomState)
     
     return X_log_train, X_log_test, y_log_train, y_log_test
+
+
 
 def getGOI():
     goi_id = [
