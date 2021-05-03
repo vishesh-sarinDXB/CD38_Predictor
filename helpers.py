@@ -29,8 +29,8 @@ def get_params(results, rank = 1):
     candidates = np.flatnonzero(results['rank_test_score'] == rank)
     return results['params'][candidates[0]]
 
-def buildNewModel(params):
-    return xgb.XGBRegressor(n_jobs = -1, random_state = 42, colsample_bylevel = params['colsample_bylevel'], 
+def buildNewModel(params, nJobs = -1, randomState = 42):
+    return xgb.XGBRegressor(n_jobs = nJobs, random_state = randomState, colsample_bylevel = params['colsample_bylevel'], 
                             colsample_bynode = params['colsample_bynode'], colsample_bytree = params['colsample_bytree'], 
                             gamma = params['gamma'], learning_rate = params['learning_rate'], 
                             max_depth = params['max_depth'], n_estimators = params['n_estimators'], subsample = params['subsample'])
@@ -178,7 +178,11 @@ def getProcessedData(goi_id, testSize = 0.2, randomState = 42):
     
     return X_log, y_log, X_log_train, X_log_test, y_log_train, y_log_test
 
-
+def getCorrAndHighCorrFeatures(X, y, X_train, X_test, n = 20):
+    X_corr = X.corrwith(y, method = 'spearman').abs().sort_values(ascending = False)
+    X_train_corr = X_train[X_corr[:n].index]
+    X_test_corr = X_test[X_corr[:n].index]
+    return X_corr, X_train_corr, X_test_corr
 
 def getGOI():
     goi_id = [
