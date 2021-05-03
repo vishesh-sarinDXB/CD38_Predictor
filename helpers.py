@@ -176,7 +176,7 @@ def getProcessedData(goi_id, testSize = 0.2, randomState = 42):
 
     X_log_train, X_log_test, y_log_train, y_log_test = train_test_split(X_log, y_log, test_size=testSize, random_state=randomState)
     
-    return X_log_train, X_log_test, y_log_train, y_log_test
+    return X_log, y_log, X_log_train, X_log_test, y_log_train, y_log_test
 
 
 
