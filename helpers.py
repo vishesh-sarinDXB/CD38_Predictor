@@ -29,11 +29,13 @@ def get_params(results, rank = 1):
     candidates = np.flatnonzero(results['rank_test_score'] == rank)
     return results['params'][candidates[0]]
 
-def buildNewModel(params, nJobs = -1, randomState = 42):
-    return xgb.XGBRegressor(n_jobs = nJobs, random_state = randomState, colsample_bylevel = params['colsample_bylevel'], 
+def buildNewModelAndFit(params, X_train, y_train, nJobs = -1, randomState = 42):
+    xgb_model = xgb.XGBRegressor(n_jobs = nJobs, random_state = randomState, colsample_bylevel = params['colsample_bylevel'], 
                             colsample_bynode = params['colsample_bynode'], colsample_bytree = params['colsample_bytree'], 
                             gamma = params['gamma'], learning_rate = params['learning_rate'], 
                             max_depth = params['max_depth'], n_estimators = params['n_estimators'], subsample = params['subsample'])
+    xgb_model.fit(X_train, y_train)
+    return xgb_model
 
 def getMAEandPlots(xgb, X_train, X_test, y_train, y_test):
     regr = RandomForestRegressor(random_state=0, n_jobs = -1, criterion = 'mae')
