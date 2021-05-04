@@ -37,7 +37,7 @@ def buildNewModelAndFit(params, X_train, y_train, nJobs = -1, randomState = 42):
     xgb_model.fit(X_train, y_train)
     return xgb_model
 
-def getMAEandPlots(xgb, X_train, X_test, y_train, y_test):
+def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'):
     regr = RandomForestRegressor(random_state=0, n_jobs = -1, criterion = 'mae')
     regr.fit(X_train, y_train)
     y_pred_regr = regr.predict(X_test)
@@ -95,7 +95,7 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test):
 
     plt.legend(loc = 'lower right', fontsize = 14)
 
-    plt.title('RF using All features', size = 20)
+    plt.title('RF using ' + title, size = 20)
 
     plt.show()
 
@@ -110,7 +110,7 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test):
 
     plt.legend(loc = 'lower right', fontsize = 14)
 
-    plt.title('XGB tuned model using All features', size = 20)
+    plt.title('XGB tuned model using ' + title, size = 20)
 
     plt.show()
 
@@ -125,7 +125,7 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test):
 
     plt.legend(loc = 'lower right', fontsize = 14)
 
-    plt.title('RF and XGB using All features', size = 20)
+    plt.title('RF and XGB using ' + title, size = 20)
 
     plt.show()
 
