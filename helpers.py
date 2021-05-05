@@ -2,6 +2,7 @@ from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from scipy.stats import uniform, randint
+from eli5.sklearn import PermutationImportance 
 # from sklearn.model_selection import 
 import numpy as np
 import pandas as pd
@@ -25,6 +26,37 @@ def report_best_scores(results, n_top=3):
             print("Parameters: {0}".format(results['params'][candidate]))
             print("")
 
+def permImportance(params, X_train, X_test, y_train, y_test, n = 20):
+    regr = RandomForestRegressor(random_state=0, n_jobs = -1, criterion = 'mae')
+
+    regr.fit(X_train, y_train)
+
+    xgb_model = buildNewModelAndFit(params, X_train, y_train)
+
+    perm = PermutationImportance(xgb_model, random_state=1).fit(X_test, y_test)
+
+    perm_xgb = eli5.formatters.as_dataframe.explain_weights_df(perm, feature_names = X_test.columns.tolist())
+    
+    perm = PermutationImportance(regr, random_state=1).fit(X_test, y_test)
+
+    perm_regr = eli5.formatters.as_dataframe.explain_weights_df(perm, feature_names = X_test.columns.tolist())
+
+    X_RF_train = X_train[perm_regr.loc[:19, 'feature']]
+    X_RF_test = X_test[perm_regr.loc[:19, 'feature']]
+
+    X_XGB_train = X_train[perm_xgb.loc[:19, 'feature']]
+    X_XGB_test = X_test[perm_xgb.loc[:19, 'feature']]
+
+    return perm_xgb, perm_regr, X_RF_train, X_RF_test, X_XGB_train, X_XGB_test
+# perm_xgb.to_csv('CD38_XGB_perm.csv')
+
+    # xgb_model = xgb.XGBRegressor(n_jobs = -1, random_state = 42, colsample_bylevel = 0.5658140364286011, 
+    #                             colsample_bynode = 0.8078536842438382, colsample_bytree = 0.7051418651679482, 
+    #                             gamma = 0.7909390660598336, learning_rate = 0.0968001207373439, 
+    #                             max_depth = 2, n_estimators = 183, subsample = 0.8963379482245502)
+
+    # xgb_model.fit(X_log_train, y_log_train, eval_metric = 'mae')
+
 def get_params(results, rank = 1):
     candidates = np.flatnonzero(results['rank_test_score'] == rank)
     return results['params'][candidates[0]]
@@ -34,7 +66,7 @@ def buildNewModelAndFit(params, X_train, y_train, nJobs = -1, randomState = 42):
                             colsample_bynode = params['colsample_bynode'], colsample_bytree = params['colsample_bytree'], 
                             gamma = params['gamma'], learning_rate = params['learning_rate'], 
                             max_depth = params['max_depth'], n_estimators = params['n_estimators'], subsample = params['subsample'])
-    xgb_model.fit(X_train, y_train)
+    xgb_model.fit(X_train, y_train, eval_metric = 'mae')
     return xgb_model
 
 def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'):
