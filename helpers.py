@@ -163,7 +163,7 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
 
     return mae
 
-def getModelAndBestParams(X, y):
+def getModelAndBestParams(X, y, n = 50):
     params = {
         "colsample_bytree": uniform(0.5, 0.5),
         "colsample_bylevel": uniform(0.5, 0.5),
@@ -175,7 +175,7 @@ def getModelAndBestParams(X, y):
         "subsample": uniform(0.5, 0.5)
     }
     xgb_model = xgb.XGBRegressor(n_jobs = -1, random_state = 42)
-    search = RandomizedSearchCV(xgb_model, param_distributions=params, random_state=42, n_iter=50, refit= True, 
+    search = RandomizedSearchCV(xgb_model, param_distributions=params, random_state=42, n_iter=n, refit= True, 
                                 scoring = "neg_mean_absolute_error", n_jobs=-1, return_train_score=True)
     search.fit(X, y)
     return search, get_params(search.cv_results_)
