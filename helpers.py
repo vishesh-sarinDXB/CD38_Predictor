@@ -211,7 +211,7 @@ def getProcessedData(goi_id, testSize = 0.2, randomState = 42):
 
     X_log_train, X_log_test, y_log_train, y_log_test = train_test_split(X_log, y_log, test_size=testSize, random_state=randomState)
     
-    return X_log, y_log, X_log_train, X_log_test, y_log_train, y_log_test
+    return goi_pat_log, X_log, y_log, X_log_train, X_log_test, y_log_train, y_log_test
 
 def getCorrAndHighCorrFeatures(X, y, X_train, X_test, n = 20):
     X_corr = X.corrwith(y, method = 'spearman').abs().sort_values(ascending = False)
