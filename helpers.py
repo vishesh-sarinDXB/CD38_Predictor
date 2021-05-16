@@ -70,6 +70,13 @@ def buildNewModelAndFit(params, X_train, y_train, nJobs = -1, randomState = 42):
     xgb_model.fit(X_train, y_train, eval_metric = 'mae')
     return xgb_model
 
+def exploratoryPlots(y, X):
+    plt.figure(figsize=(15,8))
+    sns.distplot(y)
+    plt.title("CD38 expression")
+    plt.figure(figsize=(19,25))
+    sns.barplot(data=X, orient = 'h')
+
 def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'):
     regr = RandomForestRegressor(random_state=0, n_jobs = -1, criterion = 'mae')
     regr.fit(X_train, y_train)
