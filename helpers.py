@@ -11,6 +11,18 @@ import pandas as pd
 import xgboost as xgb
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pickle
+
+def writeModelToFile(name, model):
+    file = open(name, 'wb')
+    pickle.dump(model, file)
+    file.close()
+
+def dumpModels(xgb_model, xgb_corr, xgb_RF_perm, xgb_XGB_perm):
+    writeModelToFile('XGB_ALL_PARAMS', xgb_model)
+    writeModelToFile('XGB_TOP20_CORR_PARAMS', xgb_corr)
+    writeModelToFile('XGB_TOP20_RF_PERM_PARAMS', xgb_RF_perm)
+    writeModelToFile('XGB_TOP20_XGB_PERM_PARAMS', xgb_XGB_perm)
 
 def display_scores(scores):
     print("Scores: {0}\nMean: {1:.3f}\nStd: {2:.3f}".format(scores, np.mean(scores), np.std(scores)))
