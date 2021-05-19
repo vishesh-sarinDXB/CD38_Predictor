@@ -24,6 +24,16 @@ def dumpModels(xgb_model, xgb_corr, xgb_RF_perm, xgb_XGB_perm):
     writeModelToFile('XGB_TOP20_RF_PERM_PARAMS', xgb_RF_perm)
     writeModelToFile('XGB_TOP20_XGB_PERM_PARAMS', xgb_XGB_perm)
 
+def writeToFile(mae, mae_corr, mae_RF_perm, mae_XGB_perm, X_corr, perm_regr, perm_xgb):
+    mae = mae.append(mae_corr)
+    mae = mae.append(mae_RF_perm)
+    mae = mae.append(mae_XGB_perm)
+    mae.index = ['all_tf', 't20_corr', 't20_RF_perm', 't20_XGB_perm']
+    mae.to_csv('CD38_MAE.csv')
+    X_corr.to_csv('CD38_corr.csv')
+    perm_regr.to_csv('CD38_RF_perm.csv')
+    perm_xgb.to_csv('CD38_XGB_perm.csv')
+
 def display_scores(scores):
     print("Scores: {0}\nMean: {1:.3f}\nStd: {2:.3f}".format(scores, np.mean(scores), np.std(scores)))
     
