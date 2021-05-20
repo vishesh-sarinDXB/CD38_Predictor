@@ -19,20 +19,20 @@ def writeModelToFile(name, model):
     file.close()
 
 def dumpModels(xgb_model, xgb_corr, xgb_RF_perm, xgb_XGB_perm):
-    writeModelToFile('XGB_ALL_PARAMS', xgb_model)
-    writeModelToFile('XGB_TOP20_CORR_PARAMS', xgb_corr)
-    writeModelToFile('XGB_TOP20_RF_PERM_PARAMS', xgb_RF_perm)
-    writeModelToFile('XGB_TOP20_XGB_PERM_PARAMS', xgb_XGB_perm)
+    writeModelToFile('../models/XGB_ALL_PARAMS', xgb_model)
+    writeModelToFile('../models/XGB_TOP20_CORR_PARAMS', xgb_corr)
+    writeModelToFile('../models/XGB_TOP20_RF_PERM_PARAMS', xgb_RF_perm)
+    writeModelToFile('../models/XGB_TOP20_XGB_PERM_PARAMS', xgb_XGB_perm)
 
 def writeToFile(mae, mae_corr, mae_RF_perm, mae_XGB_perm, X_corr, perm_regr, perm_xgb):
     mae = mae.append(mae_corr)
     mae = mae.append(mae_RF_perm)
     mae = mae.append(mae_XGB_perm)
     mae.index = ['all_tf', 't20_corr', 't20_RF_perm', 't20_XGB_perm']
-    mae.to_csv('CD38_MAE.csv')
-    X_corr.to_csv('CD38_corr.csv')
-    perm_regr.to_csv('CD38_RF_perm.csv')
-    perm_xgb.to_csv('CD38_XGB_perm.csv')
+    mae.to_csv('../summary/analysis/CD38_MAE.csv')
+    X_corr.to_csv('../summary/analysis/CD38_corr.csv')
+    perm_regr.to_csv('../summary/analysis/CD38_RF_perm.csv')
+    perm_xgb.to_csv('../summary/analysis/CD38_XGB_perm.csv')
 
 def display_scores(scores):
     print("Scores: {0}\nMean: {1:.3f}\nStd: {2:.3f}".format(scores, np.mean(scores), np.std(scores)))
@@ -96,8 +96,10 @@ def exploratoryPlots(y, X):
     plt.figure(figsize=(15,8))
     sns.distplot(y)
     plt.title("CD38 expression")
+    plt.savefig('../summary/figures/CD38_expression_distribution_patients.png')
     plt.figure(figsize=(19,25))
     sns.barplot(data=X, orient = 'h')
+    plt.savefig('../summary/figures/TF_expression_patients.png')
 
 def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'):
     regr = RandomForestRegressor(random_state=0, n_jobs = -1, criterion = 'mae')
@@ -161,6 +163,8 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
 
     plt.show()
 
+    plt.savefig('../summary/figures/RF using ' + title + '.png')
+
     sns.lmplot(x = 'CD38', y = 'CD38predicted', hue = 'Type', data = y_pred_xgb_comb, height = 10, legend = False)
 
     plt.xlabel('Actual', size = 16)
@@ -176,6 +180,8 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
 
     plt.show()
 
+    plt.savefig('../summary/figures/XGB tuned model using ' + title + '.png')
+
     sns.lmplot(x = 'CD38', y = 'CD38predicted', hue = 'Type', data = y_pred_comb, height = 10, legend = False)
 
     plt.xlabel('Actual', size = 16)
@@ -190,6 +196,8 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
     plt.title('RF and XGB using ' + title, size = 20)
 
     plt.show()
+
+    plt.savefig('../summary/figures/RF and XGB using ' + title + '.png')
 
     return mae
 
@@ -211,7 +219,7 @@ def getModelAndBestParams(X, y, n = 50):
     return search, get_params(search.cv_results_)
 
 def getProcessedData(goi_id, testSize = 0.2, randomState = 42):
-    pat = pd.read_csv('~/COMMPASS/COMMPASS/IA13/Expression Estimates - Gene Based/MMRF_CoMMpass_IA13a_E74GTF_HtSeq_Gene_Counts.csv')
+    pat = pd.read_csv('../data/MMRF_CoMMpass_IA13a_E74GTF_HtSeq_Gene_Counts.csv')
     pat = pat.set_index(pat.GENE_ID)
     pat = pat.drop(columns = 'GENE_ID')
     pat = pat.loc[:, pat.columns.str.endswith('1_BM') | pat.columns.str.endswith('1_PB')]
@@ -226,7 +234,7 @@ def getProcessedData(goi_id, testSize = 0.2, randomState = 42):
     # ccle = ccle.drop(['Name', 'Description'], axis = 1)
     # ccle_hlt = ccle.loc[:,ccle.columns.map(lambda x : x.endswith('HAEMATOPOIETIC_AND_LYMPHOID_TISSUE'))]
 
-    goi_names = pd.read_csv('cd138genes.csv', header = None)
+    goi_names = pd.read_csv('../data/cd138genes.csv', header = None)
     goi_names = goi_names.rename({0 :'GENE_NAMES'}, axis = 1)
 
     goi_pat = pat.loc[goi_id]
