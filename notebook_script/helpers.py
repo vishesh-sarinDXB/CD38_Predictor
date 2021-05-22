@@ -18,11 +18,15 @@ def writeModelToFile(name, model):
     pickle.dump(model, file)
     file.close()
 
-def dumpModels(xgb_model, xgb_corr, xgb_RF_perm, xgb_XGB_perm):
+def dumpModels(xgb_model, xgb_corr, xgb_RF_perm, xgb_XGB_perm, regr, regr_corr, regr_RF_perm, regr_XGB_perm):
     writeModelToFile('../models/XGB_ALL_PARAMS', xgb_model)
     writeModelToFile('../models/XGB_TOP20_CORR_PARAMS', xgb_corr)
     writeModelToFile('../models/XGB_TOP20_RF_PERM_PARAMS', xgb_RF_perm)
     writeModelToFile('../models/XGB_TOP20_XGB_PERM_PARAMS', xgb_XGB_perm)
+    writeModelToFile('../models/RF_ALL_PARAMS', regr)
+    writeModelToFile('../models/RF_TOP20_CORR_PARAMS', regr_corr)
+    writeModelToFile('../models/RF_TOP20_RF_PERM_PARAMS', regr_RF_perm)
+    writeModelToFile('../models/RF_TOP20_XGB_PERM_PARAMS', regr_XGB_perm)
 
 def writeToFile(mae, mae_corr, mae_RF_perm, mae_XGB_perm, X_corr, perm_regr, perm_xgb):
     mae = mae.append(mae_corr)
