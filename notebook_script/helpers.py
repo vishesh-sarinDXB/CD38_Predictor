@@ -203,7 +203,7 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
 
     plt.savefig('../summary/figures/RF and XGB using ' + title + '.png')
 
-    return mae
+    return mae, regr
 
 def getModelAndBestParams(X, y, n = 50):
     params = {
