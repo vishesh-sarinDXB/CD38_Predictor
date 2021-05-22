@@ -152,6 +152,8 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
 
     y_pred_comb = pd.concat([y_pred_xgb_comb, y_pred_regr_comb])
 
+    plt.figure(figsize=(20,20))
+
     sns.lmplot(x = 'CD38', y = 'CD38predicted', hue = 'Type', data = y_pred_regr_comb, height = 10, legend = False)
 
     plt.xlabel('Actual', size = 16)
@@ -164,10 +166,10 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
     plt.legend(loc = 'lower right', fontsize = 14)
 
     plt.title('RF using ' + title, size = 20)
-
+    
+    plt.savefig('../summary/figures/RF using ' + title + '.png', bbox_inches='tight')
+    
     plt.show()
-
-    plt.savefig('../summary/figures/RF using ' + title + '.png')
 
     sns.lmplot(x = 'CD38', y = 'CD38predicted', hue = 'Type', data = y_pred_xgb_comb, height = 10, legend = False)
 
@@ -182,9 +184,9 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
 
     plt.title('XGB tuned model using ' + title, size = 20)
 
-    plt.show()
+    plt.savefig('../summary/figures/XGB tuned model using ' + title + '.png', bbox_inches='tight')
 
-    plt.savefig('../summary/figures/XGB tuned model using ' + title + '.png')
+    plt.show()
 
     sns.lmplot(x = 'CD38', y = 'CD38predicted', hue = 'Type', data = y_pred_comb, height = 10, legend = False)
 
@@ -199,9 +201,9 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
 
     plt.title('RF and XGB using ' + title, size = 20)
 
-    plt.show()
+    plt.savefig('../summary/figures/RF and XGB using ' + title + '.png', bbox_inches='tight')
 
-    plt.savefig('../summary/figures/RF and XGB using ' + title + '.png')
+    plt.show()
 
     return mae, regr
 
