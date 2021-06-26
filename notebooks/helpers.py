@@ -24,11 +24,13 @@ def shapPlots(pathToModel, title, test_data):
 
     shap.plots.beeswarm(shap_values, max_display = 20, show = False)
     plt.title(title, size = 20)
-    plt.savefig('../summary/figures/' + title + 'Beeswarm Plot')
+    plt.savefig('../summary/figures/' + title + ' SHAP Beeswarm Plot')
+    plt.show()
 
     shap.plots.bar(shap_values, max_display = 20, show = False)
     plt.title(title, size = 20)
-    plt.savefig('../summary/figures/' + title + 'Bar Plot')
+    plt.savefig('../summary/figures/' + title + ' SHAP Bar Plot')
+    plt.show()
 
 # def shapAnalysis():
 
