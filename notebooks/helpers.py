@@ -12,6 +12,25 @@ import xgboost as xgb
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
+import shap
+
+def shapPlots(pathToModel, title, test_data):
+    model_file = open(pathToModel, 'rb')
+    model = pickle.load(model_file)
+    model_file.close()
+
+    explainer = shap.Explainer(model)
+    shap_values = explainer(test_data)
+
+    shap.plots.beeswarm(shap_values, max_display = 20, show = False)
+    plt.title(title, size = 20)
+    plt.savefig('../summary/figures/' + title + 'Beeswarm Plot')
+
+    shap.plots.bar(shap_values, max_display = 20, show = False)
+    plt.title(title, size = 20)
+    plt.savefig('../summary/figures/' + title + 'Bar Plot')
+
+# def shapAnalysis():
 
 def writeModelToFile(name, model):
     file = open(name, 'wb')
