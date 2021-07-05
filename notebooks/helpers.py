@@ -1,6 +1,6 @@
-from sklearn.model_selection import train_test_split, RandomizedSearchCV
+from sklearn.model_selection import train_test_split, RandomizedSearchCV, cross_validate
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, r2_score, make_scorer
 from scipy.stats import uniform, randint
 from eli5.sklearn import PermutationImportance
 import eli5
@@ -13,6 +13,32 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
 import shap
+
+def adj_rSquared_func(y, y_pred, n, p):
+    r2 = r2_score(y, y_pred)
+    return 1 - ((1 - r2) * ((n - 1) / (n - p - 1)))
+
+def getR2AndCVResults(path, X, y, X_test, y_test, numObservations = 779, numFeatures = 109):
+    file = open(path, 'rb')
+    model = pickle.load(file)
+    file.close()
+
+    y_pred = model.predict(X_test)
+
+    scoring_dict = {'adj_rSquared': make_scorer(adj_rSquared_func, n = numObservations, p = numFeatures), 
+                    'rSquared': 'r2', 
+                    'mae': 'neg_mean_absolute_error'}
+
+    r2_base = r2_score(y_test, y_pred)
+    adj_r2_base = adj_rSquared_func(y_test, y_pred, n = numObservations, p = numFeatures)
+
+    params = model.get_params()
+
+    new_model = buildNewModel(params)
+
+    cv_results = cross_validate(new_model, X, y, cv = 5, scoring = scoring_dict)
+
+    return cv_results, r2_base, adj_r2_base
 
 def shapPlots(pathToModel, title, test_data):
     model_file = open(pathToModel, 'rb')
@@ -115,6 +141,14 @@ def buildNewModelAndFit(params, X_train, y_train, nJobs = -1, randomState = 42):
                             gamma = params['gamma'], learning_rate = params['learning_rate'], 
                             max_depth = params['max_depth'], n_estimators = params['n_estimators'], subsample = params['subsample'])
     xgb_model.fit(X_train, y_train, eval_metric = 'mae')
+    return xgb_model
+
+def buildNewModel(params, nJobs = -1, randomState = 42):
+    xgb_model = xgb.XGBRegressor(n_jobs = nJobs, random_state = randomState, colsample_bylevel = params['colsample_bylevel'], 
+                            colsample_bynode = params['colsample_bynode'], colsample_bytree = params['colsample_bytree'], 
+                            gamma = params['gamma'], learning_rate = params['learning_rate'], 
+                            max_depth = params['max_depth'], n_estimators = params['n_estimators'], subsample = params['subsample'])
+    # xgb_model.fit(X_train, y_train, eval_metric = 'mae')
     return xgb_model
 
 def exploratoryPlots(y, X):
