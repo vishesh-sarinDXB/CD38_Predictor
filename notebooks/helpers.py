@@ -23,6 +23,9 @@ def getR2AndCVResults(path, X, y, X_test, y_test, numObservations = 779, numFeat
     model = pickle.load(file)
     file.close()
 
+    if path == '../models/XGB_ALL_PARAMS':
+        model = model.best_estimator_
+
     y_pred = model.predict(X_test)
 
     scoring_dict = {'adj_rSquared': make_scorer(adj_rSquared_func, n = numObservations, p = numFeatures), 
@@ -34,8 +37,11 @@ def getR2AndCVResults(path, X, y, X_test, y_test, numObservations = 779, numFeat
 
     params = model.get_params()
 
-    new_model = buildNewModel(params)
-
+    if path.find('../models/RF') != -1:
+        new_model = RandomForestRegressor(random_state=0, n_jobs = -1, criterion = 'mae')
+    else:
+        new_model = buildNewModel(params)
+    
     cv_results = cross_validate(new_model, X, y, cv = 5, scoring = scoring_dict)
 
     return cv_results, r2_base, adj_r2_base
