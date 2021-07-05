@@ -46,6 +46,8 @@ def getR2AndCVResults(path, X, y, X_test, y_test, numObservations = 779, numFeat
 
     return cv_results, r2_base, adj_r2_base
 
+
+
 def shapPlots(pathToModel, title, test_data):
     model_file = open(pathToModel, 'rb')
     model = pickle.load(model_file)
