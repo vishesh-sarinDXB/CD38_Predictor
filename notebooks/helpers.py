@@ -86,10 +86,10 @@ def writeToFile(mae, mae_corr, mae_RF_perm, mae_XGB_perm, X_corr, perm_regr, per
     mae = mae.append(mae_RF_perm)
     mae = mae.append(mae_XGB_perm)
     mae.index = ['all_tf', 't20_corr', 't20_RF_perm', 't20_XGB_perm']
-    mae.to_csv('../summary/analysis/CD38_MAE.csv')
-    X_corr.to_csv('../summary/analysis/CD38_corr.csv')
-    perm_regr.to_csv('../summary/analysis/CD38_RF_perm.csv')
-    perm_xgb.to_csv('../summary/analysis/CD38_XGB_perm.csv')
+    mae.to_csv('../summary/analysis/CD46_MAE.csv')
+    X_corr.to_csv('../summary/analysis/CD46_corr.csv')
+    perm_regr.to_csv('../summary/analysis/CD46_RF_perm.csv')
+    perm_xgb.to_csv('../summary/analysis/CD46_XGB_perm.csv')
 
 def display_scores(scores):
     print("Scores: {0}\nMean: {1:.3f}\nStd: {2:.3f}".format(scores, np.mean(scores), np.std(scores)))
@@ -160,8 +160,8 @@ def buildNewModel(params, nJobs = -1, randomState = 42):
 def exploratoryPlots(y, X):
     plt.figure(figsize=(15,8))
     sns.distplot(y)
-    plt.title("CD38 expression")
-    plt.savefig('../summary/figures/CD38_expression_distribution_patients.png')
+    plt.title("CD46 expression")
+    plt.savefig('../summary/figures/CD46_expression_distribution_patients.png')
     plt.figure(figsize=(19,25))
     sns.barplot(data=X, orient = 'h')
     plt.savefig('../summary/figures/TF_expression_patients.png')
@@ -178,9 +178,9 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
                          'rf': [mean_absolute_error(y_test, y_pred_regr)]})
 
     y_pred_regr = pd.DataFrame(y_pred_regr)
-    y_pred_regr.columns = ['CD38predicted']
+    y_pred_regr.columns = ['CD46predicted']
 
-    y_pred_regr['CD38'] = y_test
+    y_pred_regr['CD46'] = y_test
     y_pred_regr['Type'] = 'Testing Data RF'
 
     y_pred_regr_train = regr.predict(X_train)
@@ -188,16 +188,16 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
     y_pred_regr_train = pd.Series(y_pred_regr_train, index = y_train.index)
 
     y_pred_regr_train = pd.DataFrame(y_pred_regr_train)
-    y_pred_regr_train.columns = ['CD38predicted']
+    y_pred_regr_train.columns = ['CD46predicted']
 
-    y_pred_regr_train['CD38'] = y_train
+    y_pred_regr_train['CD46'] = y_train
     y_pred_regr_train['Type'] = 'Training Data RF'
     y_pred_regr_comb = pd.concat([y_pred_regr, y_pred_regr_train])
 
     y_pred_xgb = pd.DataFrame(y_pred_xgb)
-    y_pred_xgb.columns = ['CD38predicted']
+    y_pred_xgb.columns = ['CD46predicted']
 
-    y_pred_xgb['CD38'] = y_test
+    y_pred_xgb['CD46'] = y_test
     y_pred_xgb['Type'] = 'Testing Data XGB'
 
     y_pred_xgb_train = xgb.predict(X_train)
@@ -205,9 +205,9 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
     y_pred_xgb_train = pd.Series(y_pred_xgb_train, index = y_train.index)
 
     y_pred_xgb_train = pd.DataFrame(y_pred_xgb_train)
-    y_pred_xgb_train.columns = ['CD38predicted']
+    y_pred_xgb_train.columns = ['CD46predicted']
 
-    y_pred_xgb_train['CD38'] = y_train
+    y_pred_xgb_train['CD46'] = y_train
     y_pred_xgb_train['Type'] = 'Training Data XGB'
     y_pred_xgb_comb = pd.concat([y_pred_xgb, y_pred_xgb_train])
 
@@ -215,7 +215,7 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
 
     plt.figure(figsize=(20,20))
 
-    sns.lmplot(x = 'CD38', y = 'CD38predicted', hue = 'Type', data = y_pred_regr_comb, height = 10, legend = False)
+    sns.lmplot(x = 'CD46', y = 'CD46predicted', hue = 'Type', data = y_pred_regr_comb, height = 10, legend = False)
 
     plt.xlabel('Actual', size = 16)
 
@@ -232,7 +232,7 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
     
     plt.show()
 
-    sns.lmplot(x = 'CD38', y = 'CD38predicted', hue = 'Type', data = y_pred_xgb_comb, height = 10, legend = False)
+    sns.lmplot(x = 'CD46', y = 'CD46predicted', hue = 'Type', data = y_pred_xgb_comb, height = 10, legend = False)
 
     plt.xlabel('Actual', size = 16)
 
@@ -249,7 +249,7 @@ def getMAEandPlots(xgb, X_train, X_test, y_train, y_test, title = 'All Features'
 
     plt.show()
 
-    sns.lmplot(x = 'CD38', y = 'CD38predicted', hue = 'Type', data = y_pred_comb, height = 10, legend = False)
+    sns.lmplot(x = 'CD46', y = 'CD46predicted', hue = 'Type', data = y_pred_comb, height = 10, legend = False)
 
     plt.xlabel('Actual', size = 16)
 
@@ -301,7 +301,7 @@ def getProcessedData(goi_id, testSize = 0.2, randomState = 42):
     # ccle = ccle.drop(['Name', 'Description'], axis = 1)
     # ccle_hlt = ccle.loc[:,ccle.columns.map(lambda x : x.endswith('HAEMATOPOIETIC_AND_LYMPHOID_TISSUE'))]
 
-    goi_names = pd.read_csv('../data/cd138genes.csv', header = None)
+    goi_names = pd.read_csv('../data/cd46genes.csv', header = None)
     goi_names = goi_names.rename({0 :'GENE_NAMES'}, axis = 1)
 
     goi_pat = pat.loc[goi_id]
@@ -310,8 +310,8 @@ def getProcessedData(goi_id, testSize = 0.2, randomState = 42):
     goi_pat_log = np.log2(goi_pat)
     goi_pat_log = goi_pat_log.replace(-np.inf, 0)
 
-    y_log = goi_pat_log.CD38
-    X_log = goi_pat_log.drop('CD38', axis = 1)
+    y_log = goi_pat_log.CD46
+    X_log = goi_pat_log.drop('CD46', axis = 1)
 
     X_log_train, X_log_test, y_log_train, y_log_test = train_test_split(X_log, y_log, test_size=testSize, random_state=randomState)
     
@@ -324,117 +324,100 @@ def getCorrAndHighCorrFeatures(X, y, X_train, X_test, n = 20):
     return X_corr, X_train_corr, X_test_corr
 
 def getGOI():
-    goi_id = [
-         'ENSG00000141905', #NFIC
-         'ENSG00000185811', #IKZF1
-         'ENSG00000100811', #YY1
-         'ENSG00000143437', #ARNT
-         'ENSG00000120837', #NFYB
-         'ENSG00000115966', #ATF2
-         'ENSG00000185591', #SP1
-         'ENSG00000170345', #FOS
-         'ENSG00000118260', #CREB1
-         'ENSG00000028277', #POU2f2
-         'ENSG00000112592', #TBP
-         'ENSG00000103495', #MAZ
-         'ENSG00000101076', #HNF4A
-         'ENSG00000175745', #NR2F1
-         'ENSG00000126561', #STAT5A
-         'ENSG00000120690', #ELF1
-         'ENSG00000179348', #GATA2
-         'ENSG00000068305', #MEF2A
-         'ENSG00000173039', #RELA
-         'ENSG00000066336', #SPI1
-         'ENSG00000131196', #NFATC1
-         'ENSG00000130522', #JUND
-         'ENSG00000118513', #MYB
-         'ENSG00000196092', #PAX5
-         'ENSG00000164330', #EBF1
-         'ENSG00000172216', #CEBPB
-         'ENSG00000171223', #JUNB
-         'ENSG00000141568', #FOXK2
-         'ENSG00000119950', #MXI1
-         'ENSG00000147133', #TAF1
-         'ENSG00000143373', #ZNF687
-         'ENSG00000107485', #GATA3
-         'ENSG00000120798', #NR2C1
-         'ENSG00000175029', #CTBP2
-         'ENSG00000010244', #ZNF207
-         'ENSG00000168610', #STAT3
-         'ENSG00000170365', #SMAD1
-         'ENSG00000169375', #SIN3A
-         'ENSG00000167081', #PBX3
-         'ENSG00000182979', #MTA1
-         'ENSG00000106462', #EZH2
-         'ENSG00000148516', #ZEB1
-         'ENSG00000089902', #RCOR1
-         'ENSG00000143889', #HNRNPLL
-         'ENSG00000112658', #SRF
-         'ENSG00000069399', #BCL3
-         'ENSG00000164754', #RAD21
-         'ENSG00000102554', #KLF5
-         'ENSG00000125952', #MAX
-         'ENSG00000136997', #MYC
-         'ENSG00000156273', #BACH1
-         'ENSG00000171940', #ZNF217
-         'ENSG00000139083', #ETV6
-         'ENSG00000074266', #EED
-         'ENSG00000119866', #BCL11A
-         'ENSG00000104320', #NBN
-         'ENSG00000100393', #EP300
-         'ENSG00000140262', #TCF12
-         'ENSG00000149480', #MTA2
-         'ENSG00000104856', #RELB
-         'ENSG00000156127', #BATF
-         'ENSG00000134107', #BHLHE40
-         'ENSG00000073861', #TBX21
-         'ENSG00000020633', #RUNX3
-         'ENSG00000100219', #XBP1
-         'ENSG00000168310', #IRF2
-         'ENSG00000115415', #STAT1
-         'ENSG00000049768', #FOXP3
-         'ENSG00000196628', #TCF4
-         'ENSG00000151090', #THRB
-         'ENSG00000129514', #FOXA1
-         'ENSG00000181195', #PENK
-         'ENSG00000091831', #ESR1
-         'ENSG00000197780', #TAF13
-         'ENSG00000082175', #PGR
-         'ENSG00000135100', #HNF1A
-         'ENSG00000143190', #POU2F1
-         'ENSG00000101096', #NFATC2
-         'ENSG00000186350', #RXRA
-         'ENSG00000169083', #AR
-         'ENSG00000128710', #HOXD10
-         'ENSG00000077092', #RARB
-         'ENSG00000111424', #VDR
-         'ENSG00000005436', #GCFC2
-         'ENSG00000123268', #ATF1
-         'ENSG00000168214', #RBPJ
-         'ENSG00000113580', #NR3C1
-         'ENSG00000141510', #TP53
-         'ENSG00000184895', #SRY
-         'ENSG00000245848', #CEBPA
-         'ENSG00000128709', #HOXD9
-         'ENSG00000162772', #ATF3
-         'ENSG00000175832', #ETV4
-         'ENSG00000101412', #E2F1
-         'ENSG00000140374', #ETFA
-         'ENSG00000105379', #ETFB
-         'ENSG00000179388', #EGR3
-         'ENSG00000184937', #WT1
-         'ENSG00000106546', #AHR
-         'ENSG00000131759', #RARA
-         'ENSG00000109320', #NFKB1
-         'ENSG00000105698', #USF2
-         'ENSG00000125347', #IRF1
-         'ENSG00000138795', #LEF1
-         'ENSG00000126767', #ELK1
-         'ENSG00000138378', #STAT4
-         'ENSG00000102145', #GATA1
-         'ENSG00000157557', #ETS2
-         'ENSG00000134954', #ETS1
-         'ENSG00000004468' #CD38
-    ]
+    goi_id = ['ENSG00000172216', #CEBPB works
+            'ENSG00000101412', # E2F1 works
+            'ENSG00000164330', # EBF1 works
+            'ENSG00000126767', # ELK1 works
+            'ENSG00000134954', # ETS1 works
+            'ENSG00000075426', # FOSL2 works
+            'ENSG00000129514', # FOXA1 works
+            'ENSG00000102145', # GATA1 works
+            'ENSG00000125347', # IRF1 works
+            'ENSG00000130522', # JUND works
+            'ENSG00000001167', # NFYA works
+            'ENSG00000120837', # NFYB works
+            'ENSG00000196092', # PAX5 works
+            'ENSG00000173039', # RELA works
+            'ENSG00000186350', # RXRA works
+            'ENSG00000185591', # SP1 works
+            'ENSG00000147133', # TAF1 works
+            'ENSG00000178913', # TAF7 works
+            'ENSG00000100811', # YY1 works
+            'ENSG00000123268', # ATF1 works
+            'ENSG00000162772', # ATF3 works
+            'ENSG00000134107', # BHLHE40 works
+            'ENSG00000082258', # CCNT2 works
+            'ENSG00000153922', # CHD1 works
+            'ENSG00000173575', # CHD2 works
+            'ENSG00000118260', # CREB1 works
+            'ENSG00000169016', # E2F6 works
+            'ENSG00000120738', # EGR1 works
+            'ENSG00000158711', # ELK4 works
+            'ENSG00000125798', # FOXA2 works
+            'ENSG00000154727', # GABPA works
+            'ENSG00000116478', # HDAC1 works
+            'ENSG00000196591', # HDAC2 works
+            'ENSG00000101076', # HNF4A works
+            'ENSG00000117139', # KDM5B works
+            'ENSG00000073614', # KDM5A works
+            'ENSG00000125952', # MAX works
+            'ENSG00000103495', # MAZ works
+            'ENSG00000119950', # MXI1 works
+            'ENSG00000101057', # MYBL2 works
+            'ENSG00000136997', # MYC works
+            'ENSG00000185551', # NR2F2 works
+            'ENSG00000140464', # PML works
+            'ENSG00000117222', # RBBP5 works
+            'ENSG00000084093', # REST works
+            'ENSG00000143390', # RFX5 works
+            'ENSG00000169375', # SIN3A works
+            'ENSG00000066336', # SPI1 works
+            'ENSG00000072310', # SREBP1 works
+            'ENSG00000126561', # STAT5A works
+            'ENSG00000162367', # TAL1 works
+            'ENSG00000112592', # TBP works
+            'ENSG00000140262', # TCF12 works
+            'ENSG00000071564', # TCF3 works
+            'ENSG00000131931', # THAP1 works
+            'ENSG00000158773', # USF1 works
+            'ENSG00000105698', # USF2 works
+            'ENSG00000169083', # AR works
+            'ENSG00000143437', # ARNT works
+            'ENSG00000245848', # CEBPA works
+            'ENSG00000141905', # CTF works
+            'ENSG00000091831', # ESR1 works
+            'ENSG00000157557', # ETS2 works
+            'ENSG00000175832', # ETV4 works
+            'ENSG00000049768', # FOXP3 works
+            'ENSG00000179348', # GATA2 works
+            'ENSG00000005436', # GCFC2 works
+            'ENSG00000135100', # HNF1A works
+            'ENSG00000128710', # HOXD10 works
+            'ENSG00000128709', # HOXD9 works
+            'ENSG00000185811', # IKZF1 works
+            'ENSG00000138795', # LEF1 works
+            'ENSG00000118513', # MYB works
+            'ENSG00000196712', # NF1 works
+            'ENSG00000131196', # NFATC1 works
+            'ENSG00000101096', # NFATC2 works
+            'ENSG00000109320', # NFKB1 works
+            'ENSG00000175745', # NR2F1 works
+            'ENSG00000113580', # NR3C1 works
+            'ENSG00000082175', # PGR works
+            'ENSG00000186951', # PPARA works
+            'ENSG00000131759', # RARA works
+            'ENSG00000077092', # RARB works
+            'ENSG00000184895', # SRY works
+            'ENSG00000115415', # STAT1 works
+            'ENSG00000138378', # STAT4 works
+            'ENSG00000196628', # TCF4 works
+            'ENSG00000148737', # TCF7L2 works
+            'ENSG00000137203', # TFAP2A works
+            'ENSG00000141510', # TP53 works
+            'ENSG00000111424', # VDR works
+            'ENSG00000100219', # XBP1 works
+            'ENSG00000074219', # TEAD2 works
+            'ENSG00000117335' # CD46 works
+            ]
     
     return goi_id
