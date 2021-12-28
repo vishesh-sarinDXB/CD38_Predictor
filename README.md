@@ -1,6 +1,6 @@
 # CD38_Predictor
 
-To those looking for the specific code, models, summary, and figures from the bioRxiv preprint (found at https://www.sciencedirect.com/science/article/abs/pii/S0006497121045936 or https://www.biorxiv.org/content/10.1101/2021.08.04.455165v1.full.pdf) please check the CD38 tree at https://github.com/vsarin92/CD38_Predictor/tree/CD38 (also reachable via the UI).
+To those looking for the specific code, models, summary, and figures from the blood paper or bioRxiv preprint (found [here] (https://www.sciencedirect.com/science/article/abs/pii/S0006497121045936) and [here] (https://www.biorxiv.org/content/10.1101/2021.08.04.455165v1.full.pdf)) please check the CD38 tree at [CD38] (https://github.com/vsarin92/CD38_Predictor/tree/CD38) (also reachable via the UI).
 
 This repository hosts the code (and results) by the Wiita Lab at UCSF (https://wiitalab.ucsf.edu/) in building and analysing regressor models to predict CD38 expression from a set of 100 Transcription factors found to be co expressed with CD38 by wet lab experiments.
 
