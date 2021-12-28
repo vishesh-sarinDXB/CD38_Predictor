@@ -1,4 +1,7 @@
 # CD38_Predictor
+
+To those looking for the specific code, models, summary, and figures from the bioRxiv preprint (found at https://www.sciencedirect.com/science/article/abs/pii/S0006497121045936 or https://www.biorxiv.org/content/10.1101/2021.08.04.455165v1.full.pdf) please check the CD38 tree at https://github.com/vsarin92/CD38_Predictor/tree/CD38 (also reachable via the UI).
+
 This repository hosts the code (and results) by the Wiita Lab at UCSF (https://wiitalab.ucsf.edu/) in building and analysing regressor models to predict CD38 expression from a set of 100 Transcription factors found to be co expressed with CD38 by wet lab experiments.
 
 Patient transcriptomic data was from the CoMMpass dataset (Interim Analysis 13, acquired by registering at https://research.themmrf.org/), that was developed by the Multiple Myeloma Research Foundation. The hundred transcription factors we selected to build our models were determined empirically through other experimental work. Of the 892 patients who had RNA-Seq data available, we filtered to only those that were newly diagnosed. We accepted RNA-Seq data into our model building whether or not it was based off of Bone Marrow (767 patients) or Peripheral Blood (12 patients). All counts were log transformed prior to model building and analysis.
