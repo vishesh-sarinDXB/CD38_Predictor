@@ -1,5 +1,7 @@
 # CD38_Predictor
 
+This is the CD46 branch where code, models, summary, and figures for XGB models with CD46 as the target (manuscript submission pending).
+
 To those looking for the specific code, models, summary, and figures from the blood paper or bioRxiv preprint (found [here](https://www.sciencedirect.com/science/article/abs/pii/S0006497121045936) and [here](https://www.biorxiv.org/content/10.1101/2021.08.04.455165v1.full.pdf)) please check the CD38 branch at [CD38](https://github.com/vsarin92/CD38_Predictor/tree/CD38) (also reachable via the UI). 
 
 The main branch will be worked on to make the code more user friendly.
